@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <table>
+    <tr>
+      {% for product in page_obj %}
+        <td>
+          <div class="product-item">
+            <a href="#" onclick="executeMLModel(event, 'A10PEXB6XAQ5XF', '{{ product.asin }}')">
+              <h2>{{ product.asin }}</h2>
+              <img src="{{ product.imageurlhighres }}" alt="{{ product.name }}">
+              <p>Price: {{ product.price }}</p>
+            </a>
+          </div>
+        </td>
+        {% if forloop.counter|divisibleby:3 and not forloop.last %}
+          </tr><tr>
+        {% endif %}
+      {% endfor %}
+    </tr>
+  </table>
+
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+      <a href="?page=1">First</a>
+      <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.get_rows %}
+      {% if page_obj.number == num %}
+        <span class="current-page">{{ num }}</span>
+      {% elif num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}
+        <a href="?page={{ num }}">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}">Next</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+    {% endif %}
+  </div>
+
+  <div id="recommended-products-container"></div>  <!-- Container to display recommended products -->
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function recommendProducts(productID) {
+        // Make an AJAX request to get the recommended products
+        $.ajax({
+            url: '/recommend/',
+            type: 'GET',
+            data: { asin: productID,
+            userid: 'AGCQHF4A761J9',
+          rating:4 },
+            success: function (response) {
+                // Handle the response and update the recommended products section
+                var recommendedProductsContainer = $('#recommended-products-container');
+                recommendedProductsContainer.empty();
+
+                // Iterate over the recommended products and append them to the container
+                for (var i = 0; i < response.length; i++) {
+                    var recommendedProduct = response[i];
+                    var productHTML = '<div class="product-item">' +
+                        '<h2>' + recommendedProduct.asin + '</h2>' +
+                        '<img src="' + recommendedProduct.imageurlhighres + '" alt="' + recommendedProduct.asin + '">' +
+                        '<p>Price: ' + recommendedProduct.price + '</p>' +
+                        '</div>';
+
+                    recommendedProductsContainer.append(productHTML);
+                }
+            },
+            error: function (xhr, errmsg, err) {
+                // Handle the error
+            }
+        });
+    }
+    function executeMLModel(event, userID, productID) {
+      event.preventDefault();
+  
+      $.ajax({
+          url: '/recommend/',
+          type: 'GET',
+          data: {
+              productID: productID,
+              userID: userID,
+          },
+          success: function (response) {
+              // Handle the response and update the recommended products section
+              var recommendedProductsContainer = $('#recommended-products-container');
+              recommendedProductsContainer.empty();
+              // Iterate over the recommended products and append them to the container
+              for (var i = 0; i < response.length; i++) {
+                  var recommendedProduct = response[i];
+                  var productHTML = '<div class="product-item">' +
+                      '<h2>' + recommendedProduct.asin + '</h2>' +
+                      '<img src="' + recommendedProduct.imageurlhighres + '" alt="' + recommendedProduct.asin + '">' +
+                      '<p>Price: ' + recommendedProduct.price + '</p>' +
+                      '</div>';
+  
+                  recommendedProductsContainer.append(productHTML);
+              }
+          },
+          error: function (xhr, errmsg, err) {
+              // Handle the error
+          }
+      });
+  }
+  
+</script>
+{% endblock %}

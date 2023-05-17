@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Login</h2>
+  <form method="post" action="{% url 'login' %}" id="login-form">
+    {% csrf_token %}
+    <!-- Rest of the form fields -->
+    <button type="submit">Login</button>
+  </form>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#login-form').on('submit', function(event) {
+        event.preventDefault();  // Prevent form submission
+
+        // Get the CSRF token from the cookie
+        var csrftoken = Cookies.get('csrftoken');
+
+        // Prepare the form data
+        var formData = $(this).serialize();
+
+        // Send the AJAX request
+        $.ajax({
+          url: '{% url 'login' %}',
+          type: 'POST',
+          headers: {
+            'X-CSRFToken': csrftoken
+          },
+          data: formData,
+          success: function(response) {
+            // Handle success
+            // For example, redirect to the desired page
+            window.location.href = '{% url 'products' %}';
+          },
+          error: function(xhr, errmsg, err) {
+            // Handle error
+          }
+        });
+      });
+    });
+  </script>
+{% endblock %}

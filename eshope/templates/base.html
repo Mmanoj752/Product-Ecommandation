@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>eshop</title>
+    <!-- Include your CSS and JavaScript files here -->
+    <style>
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+        }
+          
+        .product-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+          
+        .product-item:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+          
+        .product-item h2 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+          
+        .product-item img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+          
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+          
+        .pagination a {
+            display: inline-block;
+            margin-right: 5px;
+            padding: 5px 10px;
+            background-color: #e6e6e6;
+            color: #333;
+            text-decoration: none;
+            border-radius: 3px;
+            transition: background-color 0.3s ease;
+        }
+          
+        .pagination a:hover {
+            background-color: #333;
+            color: #fff;
+        }
+          
+        .pagination .current-page {
+            font-weight: bold;
+            color: #333;
+        }
+          
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            padding: 12px 16px;
+            z-index: 1;
+        }
+
+        .user-dropdown:hover .user-dropdown-content {
+            display: block;
+        }
+
+        .user-dropdown-content a {
+            display: block;
+            padding: 5px 0;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .user-dropdown-content a:hover {
+            color: #fff;
+            background-color: #333;
+        }
+    </style>          
+</head>
+<body>
+    <!-- Right-top corner user name display -->
+    <div class="user-info">
+        {% if user.is_authenticated %}
+            Welcome, {{ user.username }}!
+            <a href="{% url 'eshope:logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </div>
+
+    <header>
+        <h1>eshop</h1>
+        <nav>
+            <ul>
+                <li>
+                    {% if current_user %}
+                        <a href="#" class="current-user-btn">Current User: {{ current_user }}</a>
+                    {% else %}
+                        <a href="{% url 'login' %}">Login</a>
+                    {% endif %}
+                  </li>
+                </ul>
+            </nav>
+        </header>
+    
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+    
+        <footer>
+            <p>&copy; 2023 eshop. All rights reserved.</p>
+        </footer>
+    
+        <script>
+            var currentUser = '';
+    
+            function setCurrentUser(userid) {
+                currentUser = userid;
+                document.getElementById('current-user').innerText = 'User: ' + userid;
+            }
+        </script>
+    </body>
+    </html>
+    
